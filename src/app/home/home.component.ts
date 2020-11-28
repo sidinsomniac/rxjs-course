@@ -24,7 +24,9 @@ export class HomeComponent implements OnInit {
 
         const courses$: Observable<Course[]> = this.http.get('/api/courses')
             .pipe(
-                map((payload: { payload: Course[]; }) => Object.values(payload.payload))
+                tap(console.log),
+                map((payload: { payload: Course[]; }) => Object.values(payload.payload)),
+                shareReplay()
             );
 
         this.beginnerCourses$ = courses$.pipe(
@@ -34,12 +36,6 @@ export class HomeComponent implements OnInit {
         this.advancedCourses$ = courses$.pipe(
             map(courses => courses.filter((course: Course) => course.category === "ADVANCED"))
         );
-
-
-        // .subscribe((courses: Course[]) => {
-        //     this.beginnerCourses$ = );
-        //     this.advancedCourses$ = courses.filter((course: Course) => course.category === "ADVANCED");
-        // });
 
     }
 
