@@ -28,7 +28,10 @@ export class HomeComponent implements OnInit {
                 finalize(() => console.log("Finalize executed")),
                 tap(console.log),
                 map((payload: { payload: Course[]; }) => Object.values(payload.payload)),
-                shareReplay()
+                shareReplay(),
+                retryWhen(err => err.pipe(
+                    delayWhen(() => timer(2000))
+                ))
             );
 
         this.beginnerCourses$ = courses$.pipe(
