@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Course } from "../model/course";
-import { interval, Observable, of, timer } from 'rxjs';
-import { catchError, delayWhen, map, retryWhen, shareReplay, tap, filter } from 'rxjs/operators';
+import { interval, Observable, of, timer, throwError } from 'rxjs';
+import { catchError, delayWhen, map, retryWhen, shareReplay, tap, filter, finalize } from 'rxjs/operators';
 import { HttpClient } from "@angular/common/http";
 
 
@@ -24,20 +24,11 @@ export class HomeComponent implements OnInit {
 
         const courses$: Observable<Course[]> = this.http.get('/api/courses')
             .pipe(
+                catchError(err => throwError(err)),
+                finalize(() => console.log("Finalize executed")),
                 tap(console.log),
                 map((payload: { payload: Course[]; }) => Object.values(payload.payload)),
-                shareReplay(),
-                catchError(() => of([
-                    {
-                        id: 0,
-                        description: "RxJs In Practice Course",
-                        iconUrl: 'https://s3-us-west-1.amazonaws.com/angular-university/course-images/rxjs-in-practice-course.png',
-                        courseListIcon: 'https://angular-academy.s3.amazonaws.com/main-logo/main-page-logo-small-hat.png',
-                        longDescription: "Understand the RxJs Observable pattern, learn the RxJs Operators via practical examples",
-                        category: 'BEGINNER',
-                        lessonsCount: 10
-                    }
-                ]))
+                shareReplay()
             );
 
         this.beginnerCourses$ = courses$.pipe(
