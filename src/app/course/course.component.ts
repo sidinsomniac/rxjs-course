@@ -16,6 +16,7 @@ import {
 import { merge, fromEvent, Observable, concat } from 'rxjs';
 import { Lesson } from '../model/lesson';
 import { HttpClient } from "@angular/common/http";
+import { debug, RxJsLoggingLevel } from "../common/debug";
 
 
 @Component({
@@ -42,7 +43,10 @@ export class CourseComponent implements OnInit, AfterViewInit {
 
         this.courseId = this.route.snapshot.params['id'];
 
-        this.course$ = this.http.get<Course>(`/api/courses/${this.courseId}`);
+        this.course$ = this.http.get<Course>(`/api/courses/${this.courseId}`)
+            .pipe(
+                debug(RxJsLoggingLevel.INFO, "course value"),
+            );
 
 
     }
@@ -50,17 +54,17 @@ export class CourseComponent implements OnInit, AfterViewInit {
     ngAfterViewInit() {
 
 
-        const searchLessons$ = fromEvent<{ target: { value: string; }; }>(this.input.nativeElement, 'keyup')
+
+        this.lessons$ = fromEvent<{ target: { value: string; }; }>(this.input.nativeElement, 'keyup')
             .pipe(
                 map(e => e.target.value),
+                startWith(''),
+                debug(RxJsLoggingLevel.INFO, "search"),
                 debounceTime(500),
                 distinctUntilChanged(),
-                switchMap(search => this.loadLessons(search))
+                switchMap(search => this.loadLessons(search)),
+                debug(RxJsLoggingLevel.INFO, "lesson value")
             );
-
-        const initialLessons$ = this.loadLessons();
-
-        this.lessons$ = concat(initialLessons$, searchLessons$);
 
     }
 

@@ -10,20 +10,20 @@ export function getAllCourses(req: Request, res: Response) {
 
     const error = (Math.random() >= 0.5);
 
-    if (error) {
-        console.log("ERROR loading courses!");
-        res.status(500).json({ message: 'random error occurred.' });
-    }
-    else {
+    // if (error) {
+    //     console.log("ERROR loading courses!");
+    //     res.status(500).json({ message: 'random error occurred.' });
+    // }
+    // else {
 
 
-        setTimeout(() => {
+    setTimeout(() => {
 
-            res.status(200).json({ payload: Object.values(COURSES) });
+        res.status(200).json({ payload: Object.values(COURSES) });
 
-        }, 200);
+    }, 200);
 
-    }
+    // }
 }
 
 
