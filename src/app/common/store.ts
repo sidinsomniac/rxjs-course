@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Observable, BehaviorSubject } from "rxjs";
 import { Course } from "../model/course";
-import { map, tap } from "rxjs/operators";
+import { map, tap, filter } from "rxjs/operators";
 import { createHttpObservable } from "./util";
 import { fromPromise } from "rxjs/internal-compatibility";
 
@@ -59,6 +59,15 @@ export class Store {
                 'content-type': 'application/json'
             }
         }));
+    }
+
+    selectCourseById(courseId: number) {
+        return this.courses$
+            .pipe(
+                map(courses => courses
+                    .find(course => course.id == courseId)),
+                filter(course => !!course)
+            );
     }
 
 }
